@@ -21,6 +21,7 @@ jobs:
       - name: Stop and Clean Docker Containers
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_CONNECTION_STRING_PROD }} << 'EOF'
+            sudo chmod 666 /var/run/docker.sock
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
             docker system prune -a -f
