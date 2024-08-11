@@ -6,6 +6,8 @@ services:
       context: ./translator_backend
     image: translator_backend_image
     container_name: translator_backend_1
+    environment:
+      COHERE_API_KEY: ${COHERE_API_KEY} 
     ports:
       - "8000:8000"
     volumes:

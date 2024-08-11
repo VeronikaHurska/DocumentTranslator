@@ -7,3 +7,4 @@ telegram_bot/handlers/__pycache__
 test.py
 test1.docx
 translator.pem
+translator_backend/logs

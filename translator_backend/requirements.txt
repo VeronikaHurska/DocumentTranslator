@@ -11,3 +11,5 @@ python-multipart
 olefile
 docx
 protobuf
+cohere
+python-dotenv

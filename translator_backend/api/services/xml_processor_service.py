@@ -4,10 +4,13 @@ import zipfile
 import os
 from fastapi import HTTPException
 from api.services.translator_service import Translator
+from api.services.llm_service import LlmTranslator
+from api.settings import settings
+from api.logger import logger
 
 class XMLProcessor:
     def __init__(self):
-        self.translator = Translator
+        self.translator = LlmTranslator if settings.use_llm else Translator
 
     def extract_and_translate(self, xml_content, src_lang, tgt_lang):
         parser = etree.XMLParser(remove_blank_text=True)
@@ -20,7 +23,14 @@ class XMLProcessor:
             if elem.tag.endswith('t') and elem.text and elem.text.strip():
                 sentences.append(elem.text.strip())
 
-        translated_sentences = [self.translator(src_lang, tgt_lang).translate(sentence) for sentence in sentences]
+        if settings.use_llm:
+            translated_sentences = self.translator(src_lang, tgt_lang).translate(sentences)
+            logger.info(f"Translated sentences LLM: {translated_sentences}")
+        else:
+            translated_sentences = [self.translator(src_lang, tgt_lang).translate(sentence) for sentence in sentences]
+            logger.info(f"Translated sentences MODEL: {translated_sentences}")
+
+        
 
         sentence_index = 0
         for elem in root.iter():
