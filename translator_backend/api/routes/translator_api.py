@@ -8,7 +8,6 @@ router = APIRouter()
 async def translate_document(src_lang: str, tgt_lang: str,  output_format: str = 'docx',file: UploadFile = File(...),):
     xml_processor = XMLProcessor()
     try:
-        # Log received parameters
         print(f"Received src_lang: {src_lang}, tgt_lang: {tgt_lang}, output_format: {output_format}")
 
         output_stream, media_type = xml_processor.process_and_convert(file, src_lang, tgt_lang, output_format)
