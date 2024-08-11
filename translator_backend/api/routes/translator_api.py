@@ -7,6 +7,7 @@ router = APIRouter()
 @router.post("/translate_document", response_description="Download translated document")
 async def translate_document(src_lang: str, tgt_lang: str,  output_format: str = 'docx',file: UploadFile = File(...),):
     xml_processor = XMLProcessor()
+    ''' Translator API endpoint '''
     try:
         print(f"Received src_lang: {src_lang}, tgt_lang: {tgt_lang}, output_format: {output_format}")
 
