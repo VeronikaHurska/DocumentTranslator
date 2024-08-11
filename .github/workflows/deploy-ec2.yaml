@@ -1,0 +1,52 @@
+name: Deploy project to EC2 instance
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install & Run SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Stop and Clean Docker Containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_CONNECTION_STRING_PROD }} << 'EOF'
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
+            docker system prune -a -f
+          EOF
+
+      - name: Prepare directories on the server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_CONNECTION_STRING_PROD }} << 'EOF'
+            mkdir -p /home/ubuntu/document-translator
+          EOF
+
+      - name: Copy project files to EC2 instance
+        run: |
+          scp -o StrictHostKeyChecking=no -r telegram_bot ${{ secrets.EC2_CONNECTION_STRING_PROD }}:/home/ubuntu/document-translator/
+          scp -o StrictHostKeyChecking=no -r translator_backend ${{ secrets.EC2_CONNECTION_STRING_PROD }}:/home/ubuntu/document-translator/
+          scp -o StrictHostKeyChecking=no docker-compose.yaml ${{ secrets.EC2_CONNECTION_STRING_PROD }}:/home/ubuntu/document-translator/
+
+      - name: Create .env file
+        run: |
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "COHERE_API_KEY=${{ secrets.COHERE_API_KEY }}" >> .env
+          scp -o StrictHostKeyChecking=no .env ${{ secrets.EC2_CONNECTION_STRING_PROD }}:/home/ubuntu/document-translator/.env
+
+      - name: Build & Run Docker Containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_CONNECTION_STRING_PROD }} << 'EOF'
+            docker compose -f /home/ubuntu/document-translator/docker-compose.yaml build
+            docker compose -f /home/ubuntu/document-translator/docker-compose.yaml up -d
+          EOF
