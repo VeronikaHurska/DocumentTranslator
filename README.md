@@ -2,7 +2,7 @@
 
 This service was developed to translate documents without breaking their structure. Below is an overview of the service architecture.
 
-![Service Architecture](api_schema.png)
+![Service Architecture](api_schema)
 
 ## Available Features
 - **Translation API Service**: A dedicated API service for translating documents.
