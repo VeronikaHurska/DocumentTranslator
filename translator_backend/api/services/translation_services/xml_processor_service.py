@@ -3,8 +3,8 @@ from io import BytesIO
 import zipfile
 import os
 from fastapi import HTTPException
-from api.services.translator_service import Translator
-from api.services.llm_service import LlmTranslator
+from api.services.translation_services.translator_service import Translator
+from api.services.translation_services.llm_service import LlmTranslator
 from api.settings import settings
 from api.logger import logger
 

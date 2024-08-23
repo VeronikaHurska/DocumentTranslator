@@ -13,3 +13,6 @@ docx
 protobuf
 cohere
 python-dotenv
+sqlalchemy 
+psycopg2
+sqlalchemy_utils

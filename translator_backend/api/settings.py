@@ -13,6 +13,9 @@ class Settings():
     COHERE_API_KEY: str = os.getenv("COHERE_API_KEY")
     use_llm: bool = True
     cohere_model: str = 'command-r-plus'
+    db_url: str = os.getenv("DATABASE_URL")
+
+
 
 
 settings = Settings()
